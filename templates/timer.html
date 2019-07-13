@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block title %}
+    Pomodoro Timer
+{% endblock %}
+
+{% block body %}
+    <h1 style="margin-bottom: 20px; margin-top: 10px;">Pomodoro Timer</h1>
+    <button id="work" type="button" class="btn btn-primary">Work</button>
+    <button id="break" type="button" class="btn btn-secondary">Break</button>
+    <p id="timer" style="margin: 20px; font-size: 15em;"></p>
+    <button id="start" type="button" class="btn btn-success">Start</button>
+    <button id="stop" type="button" class="btn btn-danger">Stop</button>
+    <button id="reset" type="button" class="btn btn-dark">Reset</button>
+
+    <script>
+
+        // Converts seconds to string representations in the format "mm:ss"
+        function seconds_to_string(seconds) {
+            var minutes = Math.floor(seconds / 60);
+            var seconds = seconds % 60;
+            if (seconds > 9) {
+                return minutes + ":" + seconds;
+            } else {
+                return minutes + ":0" + seconds;
+            }
+
+        }
+
+        function start_timer() {
+            if (!started) {
+                started = true;
+                running_id = setInterval(function () {
+                    if (time_left) {
+                        time_left--;
+                        document.getElementById("timer").innerHTML = seconds_to_string(time_left);
+                    } else {
+                        clearInterval(running_id);
+                        document.getElementById("timer").innerHTML = "Done";
+                    }
+                }, 1000);
+            }
+        }
+
+        function reset_timer() {
+            if (is_work) {
+                // Start timer at 25 minutes
+                time_left = 25 * 60;
+            } else {
+                time_left = 5 * 60;
+            }
+            document.getElementById("timer").innerHTML = seconds_to_string(time_left);
+            if (running_id) {
+                clearInterval(running_id);
+            }
+            started = false;
+        }
+
+        var running_id;
+        var time_left;
+        var is_work = true;
+        var started = false;
+
+        reset_timer(25);
+
+        document.querySelector('#start').onclick = start_timer;
+        document.querySelector('#stop').onclick = function() {
+            clearInterval(running_id);
+            started = false;
+        };
+        document.querySelector('#reset').onclick = reset_timer;
+        document.querySelector('#work').onclick = function() {
+            is_work = true;
+            reset_timer();
+        };
+        document.querySelector('#break').onclick = function() {
+            is_work = false;
+            reset_timer();
+        }
+
+
+    </script>
+{% endblock %}
